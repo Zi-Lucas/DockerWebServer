@@ -1,0 +1,40 @@
+[client]
+port=3306
+
+[mysql]
+
+[mysqld]
+default-storage-engine=INNODB
+max_connections=512
+skip-host-cache
+skip-name-resolve
+#查询缓存
+query_cache_type = 1
+query_cache_limit = 1MB
+query_cache_size = 128M
+
+#innoDB 全职服务器的内存50%-80%
+innodb_buffer_pool_size = 16GB
+innodb_buffer_pool_instances = 16
+#最好在1GB到4GB之间
+innodb_log_file_size = 1GB
+#当产生死锁的场景中涉及到不止InnoDB存储引擎的时候，InnoDB是没办法检测到该死锁的，这时候就只能通过锁定超时限制参数InnoDB_lock_wait_timeout来解决
+#这个参数并不是只用来解决死锁问题，在并发访问比较高的情况下，如果大量事务因无法立即获得所需的锁而挂起，会占用大量计算机资源，造成严重性能问题，
+#甚至拖跨数据库。我们通过设置合适的锁等待超时阈值，可以避免这种情况发生
+#InnoDB_lock_wait_timeout = 10
+
+max_allowed_packet = 4M
+
+
+server_id=1
+log-bin=mysql-bin
+
+slow_query_log = 1
+slow_query_log_file =/var/lib/mysql-logs/slow.log
+long_query_time = 1
+log-queries-not-using-indexes
+max_connections = 1024
+back_log = 128
+wait_timeout = 100
+interactive_timeout = 200
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES

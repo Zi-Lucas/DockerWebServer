@@ -1,0 +1,14 @@
+<FilesMatch "\.(ico|jpg|jpeg|png|gif|css|js|woff)$">
+    Header set Cache-Control "max-age=604800",public
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+<IfModule >
+    SetOutputFilter DEFLATE
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+    #不压缩图片
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+</IfModule>

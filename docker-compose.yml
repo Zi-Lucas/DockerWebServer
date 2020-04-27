@@ -1,0 +1,101 @@
+#Version 1.0
+#Author tiango <tiaogotech@foxmail.com>
+#Date 2020-02-20
+
+version: '3.2'
+services:
+  web0:
+    build:
+      context: ./web/php-nginx/
+      dockerfile: Dockerfile
+      args:
+        name: web0
+    cap_add:
+      - SYS_PTRACE
+    expose:
+      - 80
+      - 443
+      - 9000
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./app:/www
+      - ./web/php-nginx/nginx/conf.d:/etc/nginx/conf.d
+      - ./web/php-nginx/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./web/php-nginx/certs:/etc/nginx/certs
+      - ./web/php-nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./web/php-nginx/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./web/php-nginx/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./web/php-nginx/php/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
+#      - ./web/php-nginx/logs/php:/var/log/php
+#      - ./web/php-nginx/logs/nginx:/var/log/nginx
+#    links:
+#      - mysql-db
+#      - redis-db
+    restart: always
+    command: "/run.sh"
+  web1:
+    build:
+      context: ./web/php-nginx/
+      dockerfile: Dockerfile
+      args:
+        name: web1
+    cap_add:
+      - SYS_PTRACE
+    expose:
+      - 80
+      - 443
+      - 9000
+    volumes:
+      - ./app:/www
+      - ./web/php-nginx/nginx/conf.d:/etc/nginx/conf.d
+      - ./web/php-nginx/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./web/php-nginx/certs:/etc/nginx/certs
+      - ./web/php-nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./web/php-nginx/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./web/php-nginx/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./web/php-nginx/php/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf:ro
+#      - ./web/php-nginx/logs/php:/var/log/php
+#      - ./web/php-nginx/logs/nginx:/var/log/nginx
+    #    links:
+    #      - mysql-db
+    #      - redis-db
+    restart: always
+    command: "/run.sh"
+
+  haproxy:
+    image: haproxy:1.6
+    volumes:
+      - ./haproxy:/haproxy-override
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    links:
+      - web0
+      - web1
+    ports:
+      - "80:80"
+      - "443:443"
+      - "70:70"
+
+#  mysql-db:
+#    build: ./mysql
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - ./mysql/data:/var/lib/mysql:rw
+#      - ./mysql/logs:/var/lib/mysql-logs:rw
+#      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+#    environment:
+#      MYSQL_ROOT_PASSWORD: tiango0302
+#      MYSQL_DATABASE: test
+#      MYSQL_USER: tiango
+#      MYSQL_PASSWORD: tiango0302
+#    restart: always
+#    command: "--character-set-server=utf8"
+#
+#  redis-db:
+#    build: ./redis
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - ./redis/data:/data
+#    restart: always
