@@ -1,0 +1,3 @@
+#过滤应用文件
+/app/*
+!/app/index.php
